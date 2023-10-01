@@ -1,0 +1,8 @@
+import{c as r,s as i,r as c,m}from"./_astro_assets.c9893cd2.js";import{u as p}from"./hoisted.828b0d8f.js";import"./astro-assets-services.685f5bc4.js";const l=async function(){return{}};async function g(a){return l().then(t=>a.replaceAll(/__ASTRO_IMAGE_="([^"]+)"/gm,(s,o)=>i({src:t[o].src,...t[o].attributes})))}const n=await g(`<h2 id="adding-your-own-social-image-card-to-a-post">Adding your own social image card to a post</h2>
+<p>This post is an example of how to add a custom social image, also known as an OG image, to a blog post.
+By adding the optional ogImage property to the frontmatter of a post, <a href="https://github.com/vercel/satori">satori</a> won’t generate an image for this page.</p>`),d={title:"Example Social Image",publishDate:"27 January 2023",description:"An example post for Astro Cactus, detailing how to add a custom social image card in the frontmatter",tags:["example","blog","image"],ogImage:"/social-card.png",minutesRead:"1 min read"},u="/Users/matt/Desktop/nealmm.github.io/src/content/post/social-image.md",f=void 0;function b(){return`
+## Adding your own social image card to a post
+
+This post is an example of how to add a custom social image, also known as an OG image, to a blog post.
+By adding the optional ogImage property to the frontmatter of a post, [satori](https://github.com/vercel/satori) won't generate an image for this page.
+`}function A(){return n}function x(){return[{depth:2,slug:"adding-your-own-social-image-card-to-a-post",text:"Adding your own social image card to a post"}]}const I=r((a,t,s)=>{const{layout:o,...e}=d;return e.file=u,e.url=f,c`${m()}${p(n)}`});export{I as Content,A as compiledContent,I as default,u as file,d as frontmatter,x as getHeadings,b as rawContent,f as url};
