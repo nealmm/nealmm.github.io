@@ -11,17 +11,17 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 const cactusTech: Array<{ title: string; desc: string; href: string }> = [
 	{
 		title: "Web Game Boy Advance Emulator",
-		desc: "Play GBA games in the browser.",
+		desc: "A Game Boy Advance (GBA) emulator ported from C++ to JavaScript/WebAssembly that lets users play GBA games in their browser. Uses IndexedDB to store game save files and works across desktop and mobile browsers.",
 		href: "https://nealmm.github.io/web-gba-emu",
 	},
 	{
 		title: "Lambda Calculus Interpreter",
-		desc: "Evaluate pure lambda expressions.",
+		desc: "An interactive web application implemented in TypeScript which features an interpreter for expressions of lambda calculus, a concise but Turing-complete language that has significantly influenced the history and design of programming languages.",
 		href: "https://nealmm.github.io/lambda-calculus-interpreter",
 	},
 	{
 		title: "Web Audio Synthesizer",
-		desc: "A keyboard synthesizer built with the Web Audio API",
+		desc: "A keyboard synthesizer implemented in TypeScript using the Web Audio API. Allows users to modulate waveform and amplitude envelope as well as parameters for a built-in low-pass filter.",
 		href: "https://nealmm.github.io/web-audio-synth",
 	},
 ];
@@ -37,12 +37,12 @@ const cactusTech: Array<{ title: string; desc: string; href: string }> = [
 			George Washington University.
 		</p>
 		<p class="mb-4">
-			I'm currently in the process of starting this blog and dusting off old code to put on GitHub.
+			I'm currently in the process of dusting off old code to put on GitHub and getting this blog started.
 		</p>
 		<SocialList />
 	</section>
 	<section class="mt-16">
-		<h2 class="title mb-4 text-xl">Projects</h2>
+		<h2 class="title mb-4 text-xl">Recent Projects</h2>
 		<ul class="space-y-4 sm:space-y-2">
 			{
 				cactusTech.map(({ href, title, desc }) => (
@@ -55,8 +55,8 @@ const cactusTech: Array<{ title: string; desc: string; href: string }> = [
 							class="cactus-link inline-block"
 						>
 							{title}
-						</a>:
-						<p class="inline-block sm:mt-2">{desc}</p>
+						</a>
+						<p class="inline-block mt-2 mb-4">{desc}</p>
 					</li>
 				))
 			}
