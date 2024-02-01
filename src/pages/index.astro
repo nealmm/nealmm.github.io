@@ -33,13 +33,25 @@ const cactusTech: Array<{ title: string; desc: string; href: string }> = [
 		<p class="mb-4">
 			Hi, I'm Matt, a programmer based in the Washington, D.C. area. I started writing code around
 			the age of 15 when I first touched JavaScript. Since then, I earned a B.S. in computer science
-			from Virginia Commonwealth University and a certificate in full stack web development from the
+			from Virginia Commonwealth University and a certificate in full stack web development from
 			George Washington University.
 		</p>
 		<p class="mb-4">
 			I'm currently in the process of dusting off old code to put on GitHub and getting this blog started.
 		</p>
 		<SocialList />
+	</section>
+	<section aria-label="Blog post list" class="mt-16">
+		<h2 class="title mb-4 text-xl">Posts</h2>
+		<ul class="space-y-4 sm:space-y-2">
+			{
+				allPostsByDate.map((p) => (
+					<li class="flex flex-col gap-x-2 sm:flex-row">
+						<PostPreview post={p} />
+					</li>
+				))
+			}
+		</ul>
 	</section>
 	<section class="mt-16">
 		<h2 class="title mb-4 text-xl">Recent Projects</h2>
@@ -57,18 +69,6 @@ const cactusTech: Array<{ title: string; desc: string; href: string }> = [
 							{title}
 						</a>
 						<p class="inline-block mt-2 mb-4">{desc}</p>
-					</li>
-				))
-			}
-		</ul>
-	</section>
-	<section aria-label="Blog post list" class="mt-16">
-		<h2 class="title mb-4 text-xl">Posts</h2>
-		<ul class="space-y-4 sm:space-y-2">
-			{
-				allPostsByDate.map((p) => (
-					<li class="flex flex-col gap-x-2 sm:flex-row">
-						<PostPreview post={p} />
 					</li>
 				))
 			}

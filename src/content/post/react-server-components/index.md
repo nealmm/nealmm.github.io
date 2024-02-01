@@ -6,6 +6,16 @@ tags: ["react", "server components", "tutorial", "javascript"]
 draft: true
 ---
 
+## Introduction
+
+Its been a little over two years since the React team first introduced React Server Components (RSCs), yet it feels like Next.js is currently the only framework which really supports them. Sure, Gatsby now supports RSCs via partial hydration; but frankly, I had a bad experience trying out Gatsby some years ago, and the community at large seems unsure about its longevity. The developers behind Remix have been researching RSCs and will likely integrate them into that framework at some point in the future, but it's unclear when that might happen. Meanwhile, the folks at Redwood have been working hard to incorporate them into their framework, but support for RSCs there remains experimental right now. While I haven't had a chance to play with it yet, there is an interesting new framework named Waku which boasts support for RSCs, though this project is still very young and hasn't released a stable first version.
+
+But can you use RSCs without a framework at all? As a developer who first learned React by using Create React App, I sometimes feel like the underlying mechanisms of frameworks can be a little too opaque. Don't get me wrong: I love the developer experience that modern React frameworks like Next.js and Remix provide; they make it so much easier to build and deploy sophisticated web applications. But when it comes to wrapping my head around a new feature like RSCs, it helps to cutout the middle man and build something from scratch. So, let's build a simple little demonstration for how to use RSCs without a framework.
+
+I won't be going into much detail about what RSCs are or why they're beneficial; for that, I recommend reading James Comeau's excellent article on the subject. To oversimplify things a bit: whereas before React components were run exclusively on the client, we can now run components on the server—hence the moniker "server components". But of course, we still need components that run on client for user interaction; i.e., "client components". In this new paradigm components are treated as server components by default, and client components must be explicitly declared. For more details on how this works, it's worth taking a look at the official RFC.
+
+The code that follows is based upon the demo published by the React team alongside their announcement of RSCs. This demo provides the best example of how to use RSCs without a framework and consists of a simple notes application. What I've done here is pull out the core logic that makes RSCs work. Whereas the official demo features over a dozen components, implements routing and caching, and relies on a postgresql database on the backend; I've aimed to keep things as simple as possible.
+
 ## Create a Client-Side Rendered React Application
 
 Let's begin by setting up the file structure for our application. Make a `react-counter` directory with two subdirectories: `src`, which will contain the source code, and `dist`, from which we'll serve the application.
@@ -54,9 +64,7 @@ This will serve any static assets that we put in `dist`. So, let's give the serv
 </html>
 ```
 
-Notice that this page references a `main.js` file; ultimately this script will be responsible for rendering our React application, but for now we'll just use a little "hello world" script as a placeholder.
-
-Create a `dist/main.js` file with the following code.
+Notice that this page references a `main.js` file; ultimately this script will be responsible for rendering our React application, but for now we'll just use a little "hello world" script as a placeholder. Create a `dist/main.js` file with the following code.
 
 ```js
 console.log('Hello, world!');
@@ -75,13 +83,11 @@ For convenience, add a `start` script that will run the server to the `package.j
 }
 ```
 
-We can test out the server by running `npm start` and opening a browser tab at `localhost:3003`. You should see a blank page and the `Hello, world!` message logged in the JavaScript console. Go ahead and stop the server for now.
+We can test out the server by running `npm start` and opening a browser tab at `localhost:3003`. You should see a blank page and the `Hello, world!` message logged in your browser's JavaScript console. Go ahead and stop the server for now.
 
 ### Write a Couple of React Components
 
-Let's turn that blank page into a React application. We'll write two React components: `App`, which will be the rendered at the root of the application, and `Counter`, which will be a child of `App` that renders an interactive button.
-
-First, install React and make a `src/components` directory to contain the components.
+Let's turn that blank page into a React application. We'll write two components: `App`, which will be rendered at the root of the application, and `Counter`, which will be a child of `App` that renders an interactive button. First, install React and make a `src/components` directory to contain the components.
 
 ```
 $ npm install --save-exact react@canary react-dom@canary
@@ -140,8 +146,6 @@ This code will turn the body element of the `index.html` page into a root where 
 
 The placeholder script in `dist/main.js` will be replaced by the code we just wrote in `src/client.js`; but because this code depends on other code (from the `react` and `react-dom` packages as well as our components), we need to pack all that code together into one big bundle for it to run in the browser. We'll also need to compile the JSX code in our components into plain JavaScript that the browser can understand. We'll use Webpack to build the client bundle and Babel to compile the JSX code.
 
-First, install Webpack and Babel.
-
 ```
 $ npm install webpack webpack-cli
 $ npm install @babel/core @babel/preset-react babel-loader
@@ -172,7 +176,7 @@ module.exports = {
 
 This configuration tells Webpack to bundle all the code needed to run `src/client.js` and output it to `dist/main.js`, using Babel to handle any `.jsx` files it needs.
 
-Next, we'll add a build script that runs Webpack to our `package.json`. We also need to add a `babel` entry in our `package.json` to configure Babel.
+Next, we'll add a build script that runs Webpack to the `package.json` file. We also need to add a `babel` entry to configure Babel.
 
 ```json
 {
@@ -207,9 +211,7 @@ Now, run `npm run build` and give Webpack a moment to do its thing; once it fini
 
 ## Modify the Application to Incorporate RSCs
 
-Now that we have a simple React application rendering client-side, let's see how we can leverage RSCs to move (some of) the rendering process to the server. Notice how the `Counter` component is interactive and relies on the `useState` hook; in the new React paradigm, this should be a *client component*. Whereas `Counter` should continue to render on the client, the `App` component itself is not interactive and could be rendered on the server as a *server component*.
-
-To use RSCs, we need to install a special package first.
+Now that we have a simple React application rendering on the client, let's see how we can leverage RSCs to move (some of) the rendering process to the server. Notice how the `Counter` component is interactive and relies on the `useState` hook; in the new React paradigm, this should be a *client component*. Whereas `Counter` should continue to render on the client, the `App` component itself is not interactive and could be rendered on the server as a *server component*. To use RSCs, we need to install a special package first.
 
 ```
 $ npm install --save-exact react-server-dom-webpack@canary
@@ -248,11 +250,11 @@ import { createFromFetch } from 'react-server-dom-webpack/client';
 createRoot(document.documentElement).render(await createFromFetch(fetch('/react')));
 ```
 
-Now, instead of importing the `App` component and passing it to `createElement`, we're fetching some data from a `/react` endpoint on the server and passing it to `createFromFetch`. The data fetched from the server will encode all the information that React needs to render our application. We'll see how to implement that endpoint in a moment, but let's tweak our Webpack configuration a bit first.
+Now, instead of importing the `App` component and passing it to `createElement`, we're fetching some data from a `/react` endpoint on the server and passing it to `createFromFetch`. We'll see how to implement this endpoint in a moment, but let's tweak our Webpack configuration a bit first.
 
 ### Modify the Webpack Configuration
 
-As I mentioned above, RSCs require integration with a bundler. The `react-server-dom-webpack` package includes a Webpack plugin that we'll need to add to our configuration. Go ahead and modify `webpack.config.js` like so.
+As I mentioned above, RSCs require integration with a bundler. The `react-server-dom-webpack` package provides a Webpack plugin that we'll need to add to our configuration. Go ahead and modify `webpack.config.js` like so.
 
 ```js
 const path = require('path');
@@ -279,21 +281,21 @@ module.exports = {
 };
 ```
 
-Go ahead and run `npm run build` again with this new configuration and let's see what Webpack outputs. In addition to `main.js`, you should now see another JavaScript file and a couple of JSON files sitting in `dist`. What's going on here?
+Now, run `npm run build` again with this new configuration and let's see what Webpack outputs. In addition to `main.js`, you should now see another JavaScript file and a couple of JSON files sitting in `dist`. What's going on here?
 
-Well, one of the benefits that RSCs confer is *automatic code splitting*. Now, instead of one big bundle containing your entire React application, your code is split into multiple smaller bundles. This additional JavaScript file actually contains the code for `Counter`; because we declared it to be a client component, it was split off into its own bundle. The JSON files generated by this new Webpack configuration help React keep track of the bundles it produced; for our purposes here, we'll only need the `react-client-manifest.json` file.
+Well, one of the benefits that RSCs confer is *automatic code splitting*. Now, instead of one big bundle containing the entire React application, the code is split into multiple bundles. This additional JavaScript file actually contains the code for `Counter`; because we declared it to be a client component, it was split off into its own bundle. The JSON files generated by this new Webpack configuration help React keep track of the bundles it produced; for our purposes, we'll only need one of them—the `react-client-manifest.json` file.
 
 ### Modify the Server Code
 
-The only thing left to do is implement the `/react` endpoint that our client-side code needs. The `react-server-dom-webpack` package provides the functionality to render server components, but we'll need to install two more packages in order to translate our component code into a form that can be used by our server.
+The only thing left to do is implement the `/react` endpoint that our client code needs, but we'll have to install two more packages in order to translate our components' code into a form that can be used by our server.
 
 ```
 $ npm install @babel/register @babel/plugin-transform-modules-commonjs
 ```
 
-We've already seen how to configure Webpack to compile JSX code via Babel in order to build our client-side code, but we'll also have to use Babel to compile JSX code into plain JavaScript for our server-side code. The `@babel/register` package exports a function that, when called, modifies Node's `require` function to pass imports through Babel. Note that our components are written as ES modules, whereas our server is a CommonJS module. The `@babel/plugin-transform-modules-commonjs` package enables Babel to transform ES modules into CommonJS modules. Using these packages, we can now import our component code into our server.
+We've already seen how to configure Webpack to use Babel in order to compile JSX and build our client bundle, but we'll also have to use Babel to compile JSX for our server code as well. The `@babel/register` package exports a function that, when called, modifies Node's `require` function to pass imports through Babel. Note that our components are written as ES modules, whereas our server is a CommonJS module. The `@babel/plugin-transform-modules-commonjs` package enables Babel to transform ES modules into CommonJS modules. Using these packages, we can import our components' code into the server.
 
-Then, modify `src/server.js` like so.
+Go ahead and replace the contents of `src/server.js` with the following code.
 
 ```js
 const express = require('express');
@@ -325,9 +327,9 @@ server.get('/react', (_, response) => {
 server.listen(3003, () => console.log('Running server...'));
 ```
 
-There's a few changes to unpack here. Notice the `babelRegister` function call that allows us to import JSX and ES modules as described above; in addition, we're also importing a `reactRegister` function from the `react-server-dom-webpack` package that works similarly. When called, `reactRegister` modifies `require` to properly import server/client components. Then, we can import our `App` component.
+There's a few changes to unpack here. Notice the `babelRegister` function call which allows us to import JSX and ES modules as described above; in addition, we're also importing a `reactRegister` function from the `react-server-dom-webpack` package that works similarly. When called, `reactRegister` modifies `require` to properly import server/client components. After that, we import our `App` component into the server.
 
-The most important change though is the call to `renderToPipeableStream` inside the route handler for the `/react` endpoint. This function takes our `App` component and the contents of `react-client-manifest.json` as parameters and returns an object with a function named `pipe`. When passed a Node stream (like `response`), `pipe` will write the rendering data to it.
+The most important change though is the call to `renderToPipeableStream` inside the new route handler for the `/react` endpoint. This function takes our `App` component and the contents of `react-client-manifest.json` as parameters and returns an object containing a function named `pipe`. When passed a Node stream (such as `response`), the `pipe` function will render `App` and write the resulting data to this stream (as well as the information that the client needs to render `Counter`).
 
 There's just one small change left to make: modify `package.json` to set the `react-server` condition when starting the server. This condition is required to properly configure React to use RSCs.
 
@@ -363,4 +365,8 @@ There's just one small change left to make: modify `package.json` to set the `re
 }
 ```
 
-Alright! Now, if you run `npm start` again and refresh the page, you should see the application works as before. But notice how only the `Rendering Counter component` message is logged in your browser's JavaScript console. If you look at your terminal, you'll see the `Rendering App component` 
+Alright! Now, run `npm start` again and refresh the page. Notice how only the `Rendering Counter component` message is logged in your browser's JavaScript console now. The `App` component now renders on the server. If you look at your terminal, you'll see the `Rendering App component` appears there instead.
+
+## Conclusion
+
+While the React application we've built is utterly simple and doesn't really necessitate the complexity that RSCs entail, I hope that you learned something about how they work "under the hood". And take a moment to appreciate all that modern React frameworks do for us. Manually configuring transpilers and bundlers can be such an irksome distraction from actually building our applications.
