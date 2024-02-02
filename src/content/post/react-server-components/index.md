@@ -12,7 +12,8 @@ draft: true
 - ~Move some technical detail out of intro~
 - ~Describe approach (client-side rendering to RSCs) in intro~
 - ~Mention Node~
-- Mention canary releases and lack of documentation
+- ~Mention canary releases and lack of documentation~
+- Add links
 - Add screenshots and maybe use curl on `/react` endpoint
 - Make sure code actually works (!)
 
@@ -24,7 +25,7 @@ But can you use RSCs without a framework at all? As a developer who first learne
 
 I won't be going into much detail about what RSCs are or why they're beneficial; for that, I recommend reading James Comeau's excellent article on the subject. To oversimplify things a bit: whereas before, React components were rendered exclusively on the *client*, we can now render components on the *server*. For more technical details on how this all works, it's worth taking a look at the official RFC.
 
-The code that follows is based upon the demo published by the React team alongside their announcement of RSCs. This demo provides the best example for how to use RSCs without a framework and consists of a simple notes application. What I've done here is extract the core logic behind the demo's implementation of RSCs. Whereas the official demo features over a dozen components, implements routing and caching, and relies on a PostgreSQL database on the backend; I've aimed to keep things as simple as possible.
+The code that follows is based upon the demo published by the React team alongside their announcement of RSCs. This demo provides the best example for how to use RSCs without a framework and consists of a simple notes application. What I've done here is extract the core logic behind the demo's implementation of RSCs. Whereas the official demo features over a dozen components, implements routing and caching, and uses a database on the backend; I've aimed to keep things as simple as possible.
 
 We'll start by creating a conventional client-side rendered React application. The "application" we'll build is as minimal as it gets: a page featuring a counter button that displays how many times it's been clicked. Once we've got that set up, I'll walk you through the process of modifying the code to integrate RSCs. I've done my best to keep this tutorial as accessbile as possible, but I'll assume that you're at least familiar with Node and have a relatively up-to-date version installed.
 
@@ -383,4 +384,6 @@ Alright! Now, run `npm start` again and refresh the page. Notice how only the `R
 
 ## Conclusion
 
-While the React application we've built is utterly simple and doesn't really necessitate the complexity that RSCs entail, I hope that you learned something about how they work "under the hood". And take a moment to appreciate all that modern React frameworks do for us. Manually configuring transpilers and bundlers can be such an irksome distraction from actually building our applications.
+While the React application we've built is utterly simple and doesn't really necessitate the complexity that RSCs entail, I hope that you learned something about how they work "under the hood". And take a moment to appreciate all that modern React frameworks do for us. Manually configuring transpilers and bundlers can be an annoying distraction from actually building our applications.
+
+It'll be interesting to see where the React ecosystem takes RSCs going forward. Next.js provides a great developer experience around them, but it would be cool to see what Remix can do with RSCs. And, hopefully, these new features will find their way into a stable release soon and we'll get some more documentation from the React team.
