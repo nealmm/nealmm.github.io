@@ -1,6 +1,6 @@
 ---
 title: "How to Use React Server Components (without a Framework)"
-description: "Build a React application using RSC from scratch"
+description: "Build a simple React application using RSC from scratch"
 publishDate: "2 Feb 2024"
 tags: ["react", "server components", "tutorial", "javascript"]
 ---
