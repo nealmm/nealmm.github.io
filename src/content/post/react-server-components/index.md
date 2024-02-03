@@ -1,33 +1,21 @@
 ---
 title: "How to Use React Server Components (without a Framework)"
-description: "Setup a project using React Server Components without a framework"
-publishDate: "25 Jan 2024"
+description: "Build a React application using RSC from scratch"
+publishDate: "2 Feb 2024"
 tags: ["react", "server components", "tutorial", "javascript"]
-draft: true
 ---
-
-# TODO
-- ~Maybe remove Next.js from title~
-- ~Go easy on Gatsby~
-- ~Move some technical detail out of intro~
-- ~Describe approach (client-side rendering to RSCs) in intro~
-- ~Mention Node~
-- ~Mention canary releases and lack of documentation~
-- Add links
-- Add screenshots and maybe use curl on `/react` endpoint
-- Make sure code actually works (!)
 
 ## Introduction
 
-Its been a little over two years since the React team first introduced React Server Components (RSCs), yet it feels like Next.js is currently the only framework which really supports them. Although Gatsby now let's developers use RSCs via partial hydration, this feature is still in beta. The developers behind Remix have been researching RSCs and will likely integrate them into that framework at some point in the future, but it's unclear when that might happen. Meanwhile, the folks at Redwood have been working hard to incorporate them into their framework, but support for RSCs there remains very experimental right now. While I haven't had a chance to play with it yet, there is an interesting new framework named Waku which boasts support for RSCs, though this project is still very young and hasn't released a stable first version.
+Its been a little over two years since the React team [first introduced React Server Components](https://react.dev/blog/2020/12/21/data-fetching-with-react-server-components) (RSC), yet it feels like Next.js is currently the only framework which really supports them. Although Gatsby now let's developers use RSC via [partial hydration](https://www.gatsbyjs.com/docs/how-to/performance/partial-hydration/), this feature is still in beta. The developers behind Remix have been researching how to integrate RSC into that framework, but [it's unclear when that might happen](https://remix.run/blog/remix-v2#what-about-rsc). Meanwhile, the [folks at Redwood have been working hard](https://thenewstack.io/redwood-framework-all-in-on-react-server-components/) to incorporate them into their framework, but support for RSC there remains very experimental right now. While I haven't had a chance to play with it yet, there is an interesting new framework named [Waku](https://waku.gg) which boasts support for RSC, though this project is still very young and hasn't released a stable first version.
 
-But can you use RSCs without a framework at all? As a developer who first learned React by running `create-react-app`, I sometimes feel like the underlying mechanisms of these modern frameworks can be a little too opaque. Don't get me wrong: I love the developer experience that frameworks like Next.js and Remix provide; they make it so much easier to build and deploy sophisticated web applications. But when it comes to wrapping my head around a new feature like RSCs, I like to dive deep into the details and build something from scratch.
+But can you use RSC without a framework at all? As a developer who first learned React by running `create-react-app`, I sometimes feel like the underlying mechanisms of these modern frameworks can be a little too opaque. Don't get me wrong: I love the developer experience that frameworks like Next.js and Remix provide; they make it so much easier to build and deploy sophisticated web applications. But when it comes to wrapping my head around a new feature like RSC, I like to dive deep into the details and build something from scratch.
 
-I won't be going into much detail about what RSCs are or why they're beneficial; for that, I recommend reading James Comeau's excellent article on the subject. To oversimplify things a bit: whereas before, React components were rendered exclusively on the *client*, we can now render components on the *server*. For more technical details on how this all works, it's worth taking a look at the official RFC.
+I won't be going into much detail about what RSC are or why they're beneficial; for that, I recommend reading [James Comeau's excellent article](https://www.joshwcomeau.com/react/server-components/) on the subject. To oversimplify things a bit: whereas before, React components were rendered exclusively on the *client*, we can now render components on the *server*. For more technical details on how this all works, it's worth taking a look at [the official RFC](https://github.com/reactjs/rfcs/blob/main/text/0188-server-components.md).
 
-The code that follows is based upon the demo published by the React team alongside their announcement of RSCs. This demo provides the best example for how to use RSCs without a framework and consists of a simple notes application. What I've done here is extract the core logic behind the demo's implementation of RSCs. Whereas the official demo features over a dozen components, implements routing and caching, and uses a database on the backend; I've aimed to keep things as simple as possible.
+The code that follows is based upon [the demo published by the React team](https://github.com/reactjs/server-components-demo/tree/main) alongside their announcement of RSC. This demo provides the best example for how to use RSC without a framework and consists of a simple notes application. What I've done here is extract the core logic behind the demo's implementation of RSC. Whereas the official demo features over a dozen components, implements routing and caching, and uses a database on the backend; I've aimed to keep things as simple as possible.
 
-We'll start by creating a conventional client-side rendered React application. The "application" we'll build is as minimal as it gets: a page featuring a counter button that displays how many times it's been clicked. Once we've got that set up, I'll walk you through the process of modifying the code to integrate RSCs. I've done my best to keep this tutorial as accessbile as possible, but I'll assume that you're at least familiar with Node and have a relatively up-to-date version installed.
+We'll start by creating a conventional client-side rendered React application. The "application" we'll build is as minimal as it gets: a page featuring a counter button that displays how many times it's been clicked. Once we've got that set up, I'll walk you through the process of modifying the code to integrate RSC. I've done my best to keep this tutorial as accessbile as possible, but I'll assume that you're at least familiar with Node and have a relatively up-to-date version installed.
 
 ## Create a Client-Side Rendered React Application
 
@@ -96,7 +84,11 @@ For convenience, add a `start` script that will run the server to the `package.j
 }
 ```
 
-We can test out the server by running `npm start` and opening a browser tab at `localhost:3003`. You should see a blank page and the `Hello, world!` message logged in your browser's JavaScript console. Go ahead and stop the server for now.
+We can test out the server by running `npm start` and opening a browser tab at `localhost:3003`. You should see a blank page and the `Hello, world!` message logged in your browser's JavaScript console.
+
+!["Hello, world!" from a blank page](./screenshot-1.png)
+
+Go ahead and stop the server for now.
 
 ### Write a Couple of React Components
 
@@ -107,7 +99,7 @@ $ npm install --save-exact react@canary react-dom@canary
 $ mkdir src/components
 ```
 
-Because RSCs require features that aren't yet available in stable releases, we'll have to install React packages from the canary release. We're using `--save-exact` to pin the version since the canary releases don't follow semantic versioning.
+Because RSC require features that aren't yet available in stable releases, we'll have to install React packages from [the canary release](https://react.dev/blog/2023/05/03/react-canaries). We're using `--save-exact` to pin the version since the canary releases don't follow semantic versioning.
 
 Next, we'll write the `App` component. Create a `src/components/App.jsx` file with the following code.
 
@@ -120,6 +112,10 @@ export default function App() {
   return (
     <>
       <h1>A Simple Counter</h1>
+      <p>
+        The button below displays the number
+        of times it has been clicked.
+      </p>
       <Counter />
     </>
   );
@@ -224,15 +220,19 @@ Next, we'll add a build script that runs Webpack to the `package.json` file. We 
 
 Now, run `npm run build` and give Webpack a moment to do its thing; once it finishes, open up `dist/main.js` and you should see the bundle it produced—a bunch of cryptic JavaScript. If you run `npm start` again and refresh your browser tab, you should see that React rendered the application. Take a look at your browser's JavaScript console and you'll see the two messages logged by the components when they rendered.
 
-## Modify the Application to Integrate RSCs
+![React rendering the application](./screenshot-2.png)
 
-Now that we have a simple React application rendering on the client, let's see how we can leverage RSCs to move (some of) the rendering process to the server. Notice how the `Counter` component is interactive and relies on the `useState` hook; in the new React paradigm, this should be a *client component*. Whereas `Counter` should continue to render on the client, the `App` component itself is not interactive and could be rendered on the server as a *server component*. To use RSCs, we need to install a special package first.
+Stop the server again before continuing.
+
+## Modify the Application to Integrate RSC
+
+Now that we have a simple React application rendering on the client, let's see how we can leverage RSC to move (some of) the rendering process to the server. Notice how the `Counter` component is interactive and relies on the `useState` hook; in the new React paradigm, this should be a *client component*. Whereas `Counter` should continue to render on the client, the `App` component itself is not interactive and could be rendered on the server as a *server component*. To use RSC, we need to install a special package first.
 
 ```
 $ npm install --save-exact react-server-dom-webpack@canary
 ```
 
-Although you won't find any reference to it in the React documentation, this package is actively developed by the React team and holds the "secret sauce" needed to incorporate RSCs in our application. It might seem a little odd that Webpack appears in the package's name, but this is because RSCs require integration with a bundler.
+Although you won't find any reference to it in the React documentation, this package is actively developed by the React team and holds the "secret sauce" needed to incorporate RSC in our application. It might seem a little odd that Webpack appears in the package's name, but this is because RSC require integration with a bundler.
 
 ### Modify the Client Code
 
@@ -269,7 +269,7 @@ Now, instead of importing the `App` component and passing it to `createElement`,
 
 ### Modify the Webpack Configuration
 
-As I mentioned above, RSCs require integration with a bundler. The `react-server-dom-webpack` package provides a Webpack plugin that we'll need to add to our configuration. Go ahead and modify `webpack.config.js` like so.
+As I mentioned above, RSC require integration with a bundler. The `react-server-dom-webpack` package provides a Webpack plugin that we'll need to add to our configuration. Go ahead and modify `webpack.config.js` like so.
 
 ```js
 const path = require('path');
@@ -298,7 +298,7 @@ module.exports = {
 
 Now, run `npm run build` again with this new configuration and let's see what Webpack outputs. In addition to `main.js`, you should now see another JavaScript file and a couple of JSON files sitting in `dist`. What's going on here?
 
-Well, one of the benefits that RSCs confer is *automatic code splitting*. Now, instead of one big bundle containing the entire React application, the code is split into multiple bundles. This additional JavaScript file actually contains the code for `Counter`; because we declared it to be a client component, it was split off into its own bundle. The JSON files generated by this new Webpack configuration help React keep track of the bundles it produced; for our purposes, we'll only need one of them—the `react-client-manifest.json` file.
+Well, one of the benefits that RSC confer is *automatic code splitting*. Now, instead of one big bundle containing the entire React application, the code is split into multiple bundles. This additional JavaScript file actually contains the code for `Counter`; because we declared it to be a client component, it was split off into its own bundle. The JSON files generated by this new Webpack configuration help React keep track of the bundles it produced; for our purposes, we'll only need one of them—the `react-client-manifest.json` file.
 
 ### Modify the Server Code
 
@@ -314,6 +314,7 @@ Go ahead and replace the contents of `src/server.js` with the following code.
 
 ```js
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const { renderToPipeableStream } = require('react-server-dom-webpack/server');
 const { createElement } = require('react');
@@ -328,7 +329,7 @@ babelRegister({
 });
 
 const App = require('./components/App.jsx').default;
-const manifest = JSON.parse(readFileSync(path.resolve(__dirname, '../dist/react-client-manifest.json'), 'utf-8'));
+const manifest = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../dist/react-client-manifest.json'), 'utf-8'));
 
 const server = express();
 
@@ -346,7 +347,7 @@ There's a few changes to unpack here. Notice the `babelRegister` function call w
 
 The most important change though is the new route handler for the `/react` endpoint, in which we pass `App` and the contents of `react-client-manifest.json` to a function named `renderToPipeableStream`. As its name suggests, this function will render `App` into a data format that can streamed to the client. It then returns an object containing a function named `pipe`, which will take our `response` stream and write the data to it.
 
-There's just one small change left to make: modify `package.json` to set the `react-server` condition when starting the server. This condition is required to properly configure React to use RSCs.
+There's just one small change left to make: modify `package.json` to set the `react-server` condition when starting the server. This condition is required to properly configure React to use RSC.
 
 ```json
 {
@@ -382,8 +383,11 @@ There's just one small change left to make: modify `package.json` to set the `re
 
 Alright! Now, run `npm start` again and refresh the page. Notice how only the `Rendering Counter component` message is logged in your browser's JavaScript console now. The `App` component now renders on the server. If you look at your terminal, you'll see the `Rendering App component` appears there instead.
 
+![Counter rendering on the client](./screenshot-3.png)
+![App rendering on the server](./screenshot-4.png)
+
 ## Conclusion
 
-While the React application we've built is utterly simple and doesn't really necessitate the complexity that RSCs entail, I hope that you learned something about how they work "under the hood". And take a moment to appreciate all that modern React frameworks do for us. Manually configuring transpilers and bundlers can be an annoying distraction from actually building our applications.
+While the React application we've built is utterly simple and doesn't really necessitate the complexity that RSC entail, I hope that you learned something about how they work "under the hood". And take a moment to appreciate all that modern React frameworks do for us. Manually configuring transpilers and bundlers can be an annoying distraction from actually building our applications.
 
-It'll be interesting to see where the React ecosystem takes RSCs going forward. Next.js provides a great developer experience around them, but it would be cool to see what Remix can do with RSCs. And, hopefully, these new features will find their way into a stable release soon and we'll get some more documentation from the React team.
+It'll be interesting to see where the React ecosystem takes RSC going forward. Next.js provides a great developer experience around them, but it would be cool to see what Remix can do with RSC. And, hopefully, these new features will find their way into a stable release soon and we'll get some more documentation from the React team.
