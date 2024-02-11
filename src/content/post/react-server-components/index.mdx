@@ -5,6 +5,13 @@ publishDate: "2 Feb 2024"
 tags: ["react", "server components", "tutorial", "javascript"]
 ---
 
+import { Image } from 'astro:assets';
+
+import screenshot1 from './screenshot-1.png';
+import screenshot2 from './screenshot-2.png';
+import screenshot3 from './screenshot-3.png';
+import screenshot4 from './screenshot-4.png';
+
 ## Introduction
 
 Its been a little over two years since the React team [first introduced React Server Components](https://react.dev/blog/2020/12/21/data-fetching-with-react-server-components) (RSC), yet it feels like Next.js is currently the only framework which really supports them. Although Gatsby now let's developers use RSC via [partial hydration](https://www.gatsbyjs.com/docs/how-to/performance/partial-hydration/), this feature is still in beta. The developers behind Remix have been researching how to integrate RSC into that framework, but [it's unclear when that might happen](https://remix.run/blog/remix-v2#what-about-rsc). Meanwhile, the [folks at Redwood have been working hard](https://thenewstack.io/redwood-framework-all-in-on-react-server-components/) to incorporate them into their framework, but support for RSC there remains very experimental right now. While I haven't had a chance to play with it yet, there is an interesting new framework named [Waku](https://waku.gg) which boasts support for RSC, though this project is still very young and hasn't released a stable first version.
@@ -86,7 +93,7 @@ For convenience, add a `start` script that will run the server to the `package.j
 
 We can test out the server by running `npm start` and opening a browser tab at `localhost:3003`. You should see a blank page and the `Hello, world!` message logged in your browser's JavaScript console.
 
-!["Hello, world!" from a blank page](./screenshot-1.png)
+<Image src={screenshot1} alt='"Hello, world!" from a blank page' format="png"/>
 
 Go ahead and stop the server for now.
 
@@ -220,7 +227,7 @@ Next, we'll add a build script that runs Webpack to the `package.json` file. We 
 
 Now, run `npm run build` and give Webpack a moment to do its thing; once it finishes, open up `dist/main.js` and you should see the bundle it produced—a bunch of cryptic JavaScript. If you run `npm start` again and refresh your browser tab, you should see that React rendered the application. Take a look at your browser's JavaScript console and you'll see the two messages logged by the components when they rendered.
 
-![React rendering the application](./screenshot-2.png)
+<Image src={screenshot2} alt='React rendering the application' format="png"/>
 
 Stop the server again before continuing.
 
@@ -383,8 +390,8 @@ There's just one small change left to make: modify `package.json` to set the `re
 
 Alright! Now, run `npm start` again and refresh the page. Notice how only the `Rendering Counter component` message is logged in your browser's JavaScript console now. The `App` component now renders on the server. If you look at your terminal, you'll see the `Rendering App component` appears there instead.
 
-![Counter rendering on the client](./screenshot-3.png)
-![App rendering on the server](./screenshot-4.png)
+<Image src={screenshot3} alt='Counter rendering on the client' format='png' />
+<Image src={screenshot4} alt='App rendering on the server' format='png' />
 
 ## Conclusion
 
